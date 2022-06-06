@@ -1165,6 +1165,26 @@ class Solution {
         }
     }
 }
+//bst from postorder
+class Solution {
+    int idx = preorder.length-1;
+    public TreeNode bstFromPreorder(int[] preorder) {
+        return help(preorder, -(int) 1e9, (int) 1e9);
+    }
+    public TreeNode help(int[] preorder, int si, int e) {
+        if (idx == preorder.length) {
+            return null;
+        } else if (preorder[idx] > si && preorder[idx] < e) {
+            TreeNode node = new TreeNode(preorder[idx]);
+            idx--;
+            node.right = help(preorder, node.val, e);
+            node.left = help(preorder, si, node.val);
+            return node;
+        } else {
+            return null;
+        }
+    }
+}
 
 
   <----------------class 7--------------------> 
@@ -1388,6 +1408,624 @@ class Solution {
      return node;
 
     }
+   
+
+//Convert to Full Binary Tree
+// Given a binary tree root, remove all nodes with only one child.
+
+class Solution {
+   
+    public static boolean isLeaf(Tree node) {
+         return (node.left == null && node.right == null);
+     }
+ 
+     public Tree solve(Tree root) {
+         if (root == null) {
+             return null;
+         }
+  
+         
+         root.left = solve(root.left);
+         root.right = solve(root.right);
+  
+         
+         if ((root.left != null && root.right != null) || isLeaf(root)) {
+             return root;
+         }
+  
+       
+         Tree child = (root.left != null) ? root.left: root.right;
+         return child;
+ 
+         
+     }
+ }
+//Level Order Alternating odd and even wala
+class Solution {
+    int max=-(int)1e9;
+    public int[] solve(Tree root) {
+        HashMap<Integer,ArrayList<Integer>>map=new HashMap<>();
+        ArrayList<Integer>a=new ArrayList<>();
+        solve(root,0,map);
+        for(int i=0;i<=max;i++)
+        {
+
+            ArrayList<Integer>p=map.get(i);
+            if(i%2==0){
+            for(int j=0;j<p.size();j++){
+                a.add(p.get(j));
+            }
+            }else{
+                for(int j=p.size()-1;j>=0;j--){
+                a.add(p.get(j));
+            }
+            }
+        }
+        int[]arr=new int[a.size()];
+        for(int i=0;i<a.size();i++)
+        {
+            arr[i]=a.get(i);
+        }
+        
+        
+        return arr;
+
+    }
+    public void solve(Tree root,int level,HashMap<Integer,ArrayList<Integer>>map) {
+        if(root==null)return;
+        if(map.containsKey(level))
+        {
+             map.get(level).add(root.val);
+        }else{
+             map.put(level,new ArrayList<>());
+             map.get(level).add(root.val);
+        }
+        max=Math.max(max,level);
+       solve(root.left,level+1,map);
+       solve(root.right,level+1,map);
+    }
+}
+
+//Leaf Equivalent Trees
+//Given two binary trees root0 and root1, return whether the sequence of leaves left-to-right in both trees are the same.
+//last me leave same sequence me hai na
+class Solution {
+    ArrayList<Integer>ans=new ArrayList<>();
+    ArrayList<Integer>ans1=new ArrayList<>();
+    public boolean solve(Tree root0, Tree root1) {
+        ans=new ArrayList<>();
+        help(root0,ans);
+        help(root1,ans1);
+        return ans.equals(ans1);
+    }
+    public void help(Tree root,ArrayList<Integer>ans) {
+        if(root==null)return;
+        if(root.left==null && root.right==null)
+        {
+            ans.add(root.val); 
+        }
+        help(root.left,ans);
+        help(root.right,ans);
+    }
+     
+}
+<----------------class 8--------------------> 
+//Populating Next Right Pointers in Each Node II
+class Solution {
+    public Node connect(Node root) {
+        Node cur = root;
+        Node head = null;
+        Node tail = null;
+        while (cur != null) {
+            while (cur != null) {
+                if (cur.left != null) {
+                    if (head == null) {
+                        head = tail = cur.left;
+                    } else {
+                        tail.next = cur.left;
+                        tail = cur.left;
+                    }
+                }
+                if (cur.right != null) {
+                    if (head == null) {
+                        head = tail = cur.right;
+                    } else {
+                        tail.next = cur.right;
+                        tail = cur.right;
+                    }
+                }
+                cur = cur.next;
+            }
+            cur = head;
+            tail = null;
+            head = null;
+        }
+        return root;
+    }
+}
+
+//camera
+class Solution {
+	int count = 0 ;
+	final int CAMERA = 1 ;
+	final int MONITORED = 2 ;
+	final int NOT_MONITORED = 3 ;
+
+	public int cameraCounter(TreeNode root){
+
+		if(root == null)
+			return MONITORED ;
+
+		int leftcall = cameraCounter(root.left) ;
+		int rightcall = cameraCounter(root.right) ;
+
+		if(leftcall == NOT_MONITORED || rightcall == NOT_MONITORED){
+			count++ ;
+			return CAMERA ;
+		}
+
+		else if(leftcall == CAMERA || rightcall == CAMERA)
+			return MONITORED ;
+
+		else
+			return NOT_MONITORED ;
+
+
+	}
+
+	public int minCameraCover(TreeNode root) {
+		return cameraCounter(root) == NOT_MONITORED ? count+1 : count ;
+	}
+}
+//Linked List to Binary Search Tree
+class Solution {
+    public Tree solve(LLNode node) {
+        if (node == null) {
+            return null;
+        }
+
+        LLNode prev = null, slow = node, fast = node;
+        while (fast != null && fast.next != null) {
+            prev = slow;
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+
+        Tree root = new Tree();
+        root.val = slow.val;
+
+        if (prev != null) {
+            prev.next = null;
+            root.left = solve(node);
+        }
+
+        root.right = solve(slow.next);
+
+        return root;
+    }
+}
+//Cutting Binary Search Tree
+//question ->Given a binary search tree root, an integer lo, and another an integer hi, remove all nodes that are not between [lo, hi]
+class Solution {
+    public Tree solve(Tree root, int lo, int hi) {
+        return dfs_trim(root, lo, hi);
+    }
+
+    private Tree dfs_trim(Tree node, int low, int high) {
+        if (node == null)
+            return null;
+        if (low > node.val)
+            return dfs_trim(node.right, low, high);
+        if (high < node.val)
+            return dfs_trim(node.left, low, high);
+
+        node.left = dfs_trim(node.left, low, node.val);
+        node.right = dfs_trim(node.right, node.val, high);
+        return node;
+    }
+}
+//Largest Binary Search Subtree in Value
+class Solution {
+    int sum=-(int)1e9;
+    public class pair{
+        int maxsum;
+        boolean bst;
+        int min=(int)1e9;
+        int max=-(int)1e9;
+        pair(int maxsum,int min,int max,boolean bst)
+        {
+            this.maxsum=maxsum;
+            this.min=min;
+            this.max=max;
+            this.bst=bst;
+        }
+    }
+   public int solve(Tree root) {
+     sum=-(int)1e9;
+     help(root);
+     return sum;
+       
+   }
+   public pair help(Tree root) {
+       if(root==null)
+       {
+           return new pair(0,(int)1e9,-(int)1e9,true);
+       }
+       pair l=help(root.left);
+       pair r=help(root.right);
+      
+       int min=Math.min(l.min,Math.min(root.val,r.min));
+       int max=Math.max(l.max,Math.max(root.val,r.max));
+       boolean ans=l.bst&&r.bst&& root.val>l.max&&root.val<r.min;
+       if(ans)
+       {
+           int maxsum=l.maxsum+r.maxsum+root.val; 
+           sum=Math.max(sum,maxsum);
+           return new pair(maxsum,min,max,ans);
+       }else{
+           int maxsum=root.val; 
+           return new pair(maxsum,min,max,ans);
+       }
+       
+   }
+}
+//Largest Binary Search Subtree in Nodes
+class Solution {
+    int maxlevel=-(int)1e9;
+    Tree node=null;
+    public class pair{
+        int min=(int)1e9;
+        int max=-(int)1e9;
+        boolean bst=true;
+        int level=0;
+        pair(int min,int max,boolean bst,int level)
+        {
+            
+            this.min=min;
+            this.max=max;
+            this.bst=bst;
+            this.level=level;
+        }
+    }
+    public Tree solve(Tree root) {
+        help(root);
+        return node;
+    }
+    public pair help(Tree root) {
+        if(root==null)
+        {
+            return new pair((int)1e9,-(int)1e9,true,0);
+        }
+        pair l=help(root.left);
+        pair r=help(root.right);
+        int mx=Math.max(l.max,Math.max(r.max,root.val));
+        int mn=Math.min(l.min,Math.min(r.min,root.val));
+        int lvl=0;
+        boolean b=l.bst && r.bst && root.val>l.max && root.val<r.min;
+        if(b)
+        {
+             lvl=l.level+r.level+1;
+            if(maxlevel<lvl)
+            {
+                maxlevel=lvl;
+                node=root;
+            }
+        }else{
+             lvl=1;
+        }
+        return new pair(mn,mx,b,lvl);
+    }
+}
+//Longest Tree Path
+dekh na hume max lana to root add hogi ab me left ki max and right se max length le ke add max me karu ga
+class Solution {
+    public int solve(Tree root) {
+        int[]max=new int[1];
+        max[0]=-(int)1e9;
+        if(root==null)return 0;
+        help(root,max);
+        return max[0];
+    }
+    public int help(Tree root,int []max) {
+       if(root==null)return 0;
+       int l=help(root.left,max); 
+       int r=help(root.right,max); 
+       max[0]=Math.max(max[0],l+r+1);
+       return Math.max(l,r)+1;
+    }
+}
+//Swappable Trees
+// Given two trees root0 and root1, 
+// return whether you can transform root0 into root1 by swapping any node's left and right subtrees any number of times.
+
+class Solution {
+    public boolean solve(Tree root1, Tree root2) {
+        return help(root1, root2);
+    }
+    public boolean help(Tree root1, Tree root2) {
+         if(root1 == null && root2 == null){
+            return true;
+         }
+         else if (root1!=null && root2!=null &&root1.val==root2.val) {
+            return  help(root1.left, root2.left) && help(root1.right, root2.right) || help(root1.left, root2.right) && help(root1.right, root2.left);
+        }else{
+            return false;
+        }     
+    }
+}
+//Interval Union
+//Given a two-dimensional integer list intervals representing unsorted inclusive intervals, return their union in sorted order.
+class Solution {
+   public class pair implements Comparable<pair>{
+        int start;
+        int end;
+        pair(int start,int end)
+        {
+            this.start=start;
+            this.end=end;
+        }
+        public int compareTo(pair o){
+           if(this.start==o.start){
+           return this.end-o.end;
+           }
+           else{
+           return this.start-o.start;
+           }
+        }
+
+    }
+    public int[][] solve(int[][] intervals) {
+        Stack<pair>s=new Stack<>();
+        pair[]pair=new pair[intervals.length];
+        for(int i=0;i<intervals.length;i++){
+            pair[i]=new pair(intervals[i][0],intervals[i][1]);
+        }
+        Arrays.sort(pair);
+        s.push(pair[0]);
+        for(int i=1;i<intervals.length;i++)
+        {
+            if(pair[i].start>s.peek().end)
+            {
+                s.push(pair[i]);
+            }else{
+                s.peek().end=(Math.max(s.peek().end,pair[i].end));
+            }
+        }
+        Stack<pair>ans=new Stack<>();
+        while(s.size()>0)
+        {
+            ans.push(s.pop());
+        }
+        int [][]arr=new int[ans.size()][2];
+        int i=0;
+        while(ans.size()>0)
+        {
+            pair o=ans.pop();
+            if(i<arr.length){
+            arr[i][0]=o.start;
+            arr[i][1]=o.end;
+            i++;
+            }
+            
+        }
+        return arr;   
+    }
+}
+//You are given a two-dimensional list of integers matrix where each row is sorted in ascending order. Return the smallest number that exists in every row. If there's no solution, return -1.
+
+class Solution {
+    public int solve(int[][] matrix) {
+        if(matrix.length==0 || matrix[0].length==0)return -1;
+        for(int i=0;i<matrix[0].length;i++)
+        {
+            int val=matrix[0][i];
+            boolean b=true;
+            for(int j=1;j<matrix.length;j++)
+            {
+                if(!binery(matrix[j],0,matrix[j].length-1,val)){
+                    b=false;
+                    break;
+                }
+            }
+            if(b)return val;
+        }
+        return -1;
+    }
+    public boolean binery(int []arr,int l,int h,int val)
+    {
+        while(l<=h)
+        {
+            int mid=(l+h)/2;
+            if(arr[mid]==val){
+                return true;
+            }else if(arr[mid]<val){
+                l++;
+            }else{
+                h--;
+            }
+        }
+        return false;
+    }
+}
+//Distribute Coins in Binary Treec
+class Solution {
+    class Pair {
+        int nodes;
+        int coins;
+
+        Pair(int nodes, int coins) {
+            this.nodes = nodes;
+            this.coins = coins;
+        }
+    }
+
+    int moves = 0;
+
+    public int distributeCoins(TreeNode root) {
+        helper(root);
+        return moves;
+    }
+
+    public Pair helper(TreeNode node) {
+        if (node == null) {
+            return new Pair(0, 0);
+        }
+
+        Pair lp = helper(node.left);
+        Pair rp = helper(node.right);
+
+        Pair mp = new Pair(0, 0);
+        mp.nodes = lp.nodes + rp.nodes + 1; // size
+        mp.coins = lp.coins + rp.coins + node.val; // sum
+        moves += Math.abs(mp.nodes - mp.coins);
+        return mp;
+    }
+}
+//Flatten Binary Tree to Linked List
+//bas na tree hai usko linkedlist bana hai 
+class Solution {
+    TreeNode prev=null;
+    public void flatten(TreeNode root) {
+        help(root);  
+    }
+    public void help(TreeNode root) {
+        if(root==null)return ;
+        help(root.right);
+        help(root.left);
+        root.left=null;  
+        root.right=prev;
+        prev=root;
+    }
+}
+//tree from in and pre
+class Solution {
+    public TreeNode buildTree(int[] preorder, int[] inorder) {
+        HashMap<Integer,Integer>map=new HashMap<>();
+        for(int i=0;i<inorder.length;i++)
+        {  
+          map.put(inorder[i],i);
+        }
+        return help(preorder,inorder,0,inorder.length-1,0,preorder.length-1,map);
+    }
+    public TreeNode help(int[] preorder, int[] inorder,int prl,int prh,int inl,int inh,HashMap<Integer,Integer>map) {
+        if(prl>prh || inl>inh)return null;
+        TreeNode node=new TreeNode(preorder[prl]);
+        int idx=map.get(preorder[prl]);
+        int lhs=map.get(preorder[prl])-inl;
+        node.left=help(preorder,inorder,prl+1,prl+lhs,inl,idx-1,map);
+        node.right=help(preorder,inorder,prl+lhs+1,prh,idx+1,inh,map);
+        return node;
+    }
+}
+//tree from in and post
+class Solution {
+    public TreeNode buildTree(int[] inorder, int[] postorder) {
+        HashMap<Integer, Integer> map = new HashMap<>();
+        for (int i = 0; i < inorder.length; i++) {
+            map.put(inorder[i], i);
+        }
+        return help(postorder, inorder, 0, inorder.length - 1, 0, postorder.length - 1, map);
+    }
+
+    public TreeNode help(int[] postorder, int[] inorder, int prl, int prh, int inl, int inh, HashMap<Integer, Integer> map) {
+        if (prl > prh || inl > inh) return null;
+        TreeNode node = new TreeNode(postorder[prh]);
+        int idx = map.get(postorder[prh]);
+        int lhs = map.get(postorder[prh]) - inl;
+        node.left = help(postorder, inorder, prl, prl+lhs-1, inl, idx - 1, map);
+        node.right = help(postorder, inorder, prl+lhs, prh-1, idx + 1, inh, map);
+        return node;
+    }
+}
+//tree from in and level
+class GfG
+{
+    Node buildTree(int inord[], int level[])
+    {
+        HashMap<Integer, Integer> map = new HashMap<>();
+        for(int i = 0; i < level.length; i++){
+            map.put(level[i], i);
+        }
+
+        Node root = helper(inord, level, map, 0, inord.length - 1);
+        return root;
+        
+    }
+
+    public Node helper(int[] inord, HashMap<Integer, Integer> map, int lo, int hi){
+        if(lo > hi){
+            return null;
+        }
+        
+        int minidx = lo; // assuming lo of inorder has least index in levelorder
+        for(int i = lo + 1; i <= hi; i++){
+            if(map.get(inord[i]) < map.get(inord[minidx])){
+                minidx = i;
+            }
+        }
+
+        Node node = new Node(inord[minidx]);
+        node.left = helper(inord, map, lo, minidx - 1);
+        node.right = helper(inord, map, minidx + 1, hi);
+
+        return node;
+    }  
+}
+//tree from pre and post
+class Solution {
+    public TreeNode constructFromPrePost(int[] preorder, int[] postorder) {
+        HashMap<Integer,Integer> map = new HashMap<>();
+        for(int i = 0; i < postorder.length; i++){
+            map.put(postorder[i], i);
+        }    
+
+        TreeNode root = helper(preorder, postorder, map, 0, preorder.length - 1, 0, postorder.length - 1);
+        return root;
+    }
+    public TreeNode helper(int[] pre, int[] post, HashMap<Integer, Integer> map, int prelo, int prehi, int postlo, int posthi){
+        if(prelo > prehi || postlo > posthi){
+            return null;
+        }
+        TreeNode node = new TreeNode(pre[prelo]);
+        if(prelo + 1 <= prehi){
+            int sidx = map.get(pre[prelo + 1]);
+            int lhs = sidx - postlo + 1;
+
+            node.left = helper(pre, post, map, prelo + 1, prelo + lhs, postlo, sidx);
+            node.right = helper(pre, post, map, prelo + lhs + 1, prehi, sidx + 1, posthi - 1);
+        }
+
+        return node;
+    }  
+}
+//Binary Tree to doubly linkedlist
+class Solution
+{ 
+    Node head=null;
+    Node prev=null;
+    Node bTreeToClist(Node root)
+    {
+        help(root);
+        prev.right=head;
+        head.left=prev;
+        return head;
+    }
+      void help(Node root)
+    {
+        if(root==null)return;
+        help(root.left);
+        if(head==null)
+        {
+            head=root;
+        }else{
+            root.left=prev;
+            prev.right=root;
+        }
+        prev=root;
+        help(root.right);
+        
+    }
+    
 }
 
 
