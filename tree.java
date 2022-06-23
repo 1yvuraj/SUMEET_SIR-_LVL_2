@@ -625,7 +625,7 @@ class Solution {
        
     }
 }
-
+// 
 class Solution {
     public class Pair{
         int val;
@@ -917,7 +917,7 @@ class Solution
         help(root.left,ans+root.data);
     }
 }
-//root to any node max sum
+//f
 
 class Solution
 {
@@ -2025,8 +2025,272 @@ class Solution
         help(root.right);
         
     }
+
     
 }
+//k-th smallest element in BST 
+class Solution {
+    // Return the Kth smallest element in the given BST
+    public int KthSmallestElement(Node root, int K) {
+        // Write your code here\
+        int c=0;
+        Node cur=root;
+        int ans=-1;
+        while (cur != null) {
+            if (cur.left == null) {
+                c++;
+                if(c==K)
+                {
+                    ans= cur.data;
+                }
+                cur = cur.right;
+            } else {
+                Node p = cur.left;
+                while (p.right != null && p.right != cur) {
+                    p = p.right;
+                }
+                if (p.right == null) {
+                    p.right = cur;
+                    cur = cur.left;
+                }
+                if (p.right == cur) {
+                    p.right = null;
+                    c++;
+                if(c==K)
+                {
+                    ans= cur.data;
+                }
+                    cur = cur.right;
+                }
+            }
+           
+        }
+         return ans;
+    }  
+}
+// Longest Univalue Path
+same value ka Longest
+class Solution {
+    int max = -(int) 1e9;
+    public class pair {
+        int h;
+        TreeNode v;
+
+        pair(int h, TreeNode v) {
+            this.h = h;
+            this.v = v;
+        }
+    }
+
+    public int longestUnivaluePath(TreeNode root) {
+        max = -(int) 1e9;
+        help(root);
+        return max == -(int) 1e9 ? 0 : max - 1;
+    }
+
+    public pair help(TreeNode root) {
+        if (root == null) {
+            return new pair(0, null);
+        }
+        pair l = help(root.left);
+        pair r = help(root.right);
+        int hl = 0;
+        int hr = 0;
+
+        if (l.v != null && l.v.val == root.val) {
+            hl = l.h;
+        }
+        if (r.v != null && r.v.val == root.val) {
+            hr = r.h;
+        }
+
+        max = Math.max(max, hl + hr + 1);
+        return new pair(Math.max(hr, hl) + 1, root);
+    }
+}
+//Recover a Tree From Preorder Traversal
+//boi depth de rakha tha - kar kar ke
+class Solution {
+    int i = 0;
+    public TreeNode recoverFromPreorder(String traversal) {
+        return help(traversal, 0);
+    }
+
+    public TreeNode help(String str, int depth) {
+        int d = 0;
+        while (i + d < str.length() && str.charAt(i + d) == '-') {
+            d++;
+        }
+        if (d != depth) {
+            return null;
+        }
+        int nd = 0;
+        while (i + nd + d < str.length() && str.charAt(i + nd + d) != '-') {
+            nd++;
+        }
+        int val = Integer.parseInt(str.substring(i + d, i + d + nd));
+        i = i + d + nd;
+        TreeNode node = new TreeNode(val);
+
+        node.left = help(str, d + 1);
+        node.right = help(str, d + 1);
+        return node;
+    }
+}
+// Lowest Common Ancestor of a Binary Search Tree
+class Solution {
+    public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+        if (p.val < root.val && q.val < root.val) {
+            return lowestCommonAncestor(root.left, p, q);
+        } else if (p.val > root.val && q.val > root.val) {
+            return lowestCommonAncestor(root.right, p, q);
+        } else {
+            return root;
+        }
+    }
+}
+//Lowest Common Ancestor in a Binary Tree 
+class Solution
+{
+    //Function to return the lowest common ancestor in a Binary Tree.
+	Node lca(Node root, int n1,int n2)
+	{
+		// Your code here
+		return help(root,n1,n2);
+	}
+	Node help(Node root, int n1,int n2)
+	{
+	    if(root==null)return null;
+	    if(root.data==n1 || root.data==n2 )
+	    {
+	        return root;
+	    }
+		Node left=help(root.left,n1,n2);
+		Node right=help(root.right,n1,n2);
+		if(left==null)
+		{
+		    return right;
+		}else if(right==null)
+		{
+		    return left;
+		}else{
+		    return root;
+		}
+	}
+}
+//Sum Root to Leaf Numbers
+bas last me sum kar ke sabko add karna
+class Solution {
+    int sum = 0;
+    public int sumNumbers(TreeNode root) {
+        help(root, 0);
+        return sum;
+    }
+    public void help(TreeNode root, int val) {
+        if (root == null) {
+            return;
+        }
+        if (root.left == null && root.right == null) {
+            val = 10 * val + root.val;
+            sum += val;
+        }
+        help(root.left, 10 * val + root.val);
+        help(root.right, 10 * val + root.val);
+    }
+}
+//Maximum Width of Binary Tree
+//bas na null bhi count karna hai to ab level -1 and levl+1 se is lia nhi kar sakte kuki us
+//me null nhi hoga but jab hum formula lagte hai idx*2+1for left and idx*2+2 for right this include null also
+class Solution {
+    int max=-(int)1e9;
+    public class pair{
+        int idx;
+        TreeNode node;
+        pair(int idx,TreeNode node){
+            this.idx=idx;
+            this.node=node;
+        }
+    }
+    
+    public int widthOfBinaryTree(TreeNode root) {
+        help(root);
+        return max;
+    }
+    public void help(TreeNode root) {
+        LinkedList<pair>list=new LinkedList<>();
+        list.addLast(new pair(0,root));
+        while(list.size()>0)
+        {
+            int size=list.size();
+            int l=list.getFirst().idx;
+            int r=list.getFirst().idx;
+            while(size-->0)
+            {
+                pair p=list.removeFirst();
+                r=p.idx;
+                max=Math.max(max,r-l+1);
+                if(p.node.left!=null)
+                {
+                    list.addLast(new pair(p.idx*2+1,p.node.left));
+                }
+                if(p.node.right!=null)
+                {
+                    list.addLast(new pair(p.idx*2+2,p.node.right));
+                }
+                
+            }
+        }
+    }
+}
+////Maximum Width of Binary Tree
+//bas na null bhi count karna hai to ab level -1 and levl+1 se is lia nhi kar sakte kuki us
+//me null nhi hoga but jab hum formula lagte hai idx*2+1for left and idx*2+2 for right this include null also
+class Solution {
+    int max=-(int)1e9;
+    public class pair{
+        int idx;
+        TreeNode node;
+        pair(int idx,TreeNode node){
+            this.idx=idx;
+            this.node=node;
+        }
+    }
+    
+    public int widthOfBinaryTree(TreeNode root) {
+        help(root);
+        return max;
+    }
+    public void help(TreeNode root) {
+        LinkedList<pair>list=new LinkedList<>();
+        list.addLast(new pair(0,root));
+        while(list.size()>0)
+        {
+            int size=list.size();
+            int l=list.getFirst().idx;
+            int r=list.getFirst().idx;
+            while(size-->0)
+            {
+                pair p=list.removeFirst();
+                r=p.idx;
+                max=Math.max(max,r-l+1);
+                if(p.node.left!=null)
+                {
+                    list.addLast(new pair(p.idx*2+1,p.node.left));
+                }
+                if(p.node.right!=null)
+                {
+                    list.addLast(new pair(p.idx*2+2,p.node.right));
+                }
+                
+            }
+        }
+    }
+}
+
+
+
+
+
 
 
 
